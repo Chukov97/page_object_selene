@@ -1,101 +1,72 @@
 from selene import browser, have, be, by
 from demoqa_tests.resource import path
+from demoqa_tests.enums.gender import Gender
+from demoqa_tests.enums.hobby import Hobby
+from demoqa_tests.models.constatn import PRACTICE_FORM, OPEN_PAGE_URL
 
 
 class RegistrationPage:
 
     def open_page(self):
-        browser.open('/automation-practice-form')
-        browser.element('//div[@class="main-header"]').should(have.text('Practice Form'))
+        browser.open(OPEN_PAGE_URL)
+        browser.element('//div[@class="main-header"]').should(have.text(PRACTICE_FORM))
         return self
 
-    def enter_first_name(self, first_name):
-        browser.element('//input[@id="firstName"]').should(be.blank).type(first_name)
-        return self
+    def enter_user_details(self, user):
+        browser.element('//input[@id="firstName"]').should(be.blank).type(user.first_name)
+        browser.element('//input[@id="lastName"]').should(be.blank).type(user.last_name)
+        browser.element('//input[@id="userEmail"]').should(be.blank).type(user.email)
 
-    def enter_last_name(self, last_name):
-        browser.element('//input[@id="lastName"]').should(be.blank).type(last_name)
-        return self
+        gender_mapping = {
+            Gender.MALE: '//input[@id="gender-radio-1"]',
+            Gender.FEMALE: '//input[@id="gender-radio-2"]',
+            Gender.OTHER: '//input[@id="gender-radio-3"]'
+        }
 
-    def enter_email(self, email):
-        browser.element('//input[@id="userEmail"]').should(be.blank).type(email)
-        return self
+        selected_gender = Gender(user.gender)
+        browser.element(gender_mapping.get(selected_gender, gender_mapping[Gender.OTHER])).double_click()
 
-    def select_gender(self, gender):
-        if gender.lower() == 'male':
-            browser.element('//input[@id="gender-radio-1"]').double_click()
-        elif gender.lower() == 'female':
-            browser.element('//input[@id="gender-radio-2"]').double_click()
-        else:
-            browser.element('//input[@id="gender-radio-3"]').double_click()
-        return self
-
-    def enter_phone_number(self, phone_number):
-        browser.element('//input[@id="userNumber"]').should(be.blank).type(phone_number)
-        return self
-
-    def select_date_of_birth(self, year, month, day):
+        browser.element('//input[@id="userNumber"]').should(be.blank).type(user.phone_number)
         browser.element('//input[@id="dateOfBirthInput"]').click()
-        browser.element('//select[@class="react-datepicker__month-select"]').click().element(by.text(month)).click()
-        browser.element('//select[@class="react-datepicker__year-select"]').click().element(by.text(year)).click()
-        browser.element(f'//div[@class="react-datepicker__day react-datepicker__day--0{day}"]').click()
-        return self
+        browser.element('//select[@class="react-datepicker__month-select"]').click().element(
+            by.text(user.month)).click()
+        browser.element('//select[@class="react-datepicker__year-select"]').click().element(by.text(user.year)).click()
+        browser.element(f'//div[@class="react-datepicker__day react-datepicker__day--0{user.day}"]').click()
+        browser.element('//input[@id="subjectsInput"]').should(be.blank).type(user.subject).press_enter()
 
-    def enter_subject(self, subject):
-        browser.element('//input[@id="subjectsInput"]').should(be.blank).type(subject).press_enter()
-        return self
+        hobby_mapping = {
+            Hobby.SPORTS: '//label[@for="hobbies-checkbox-1"]',
+            Hobby.READING: '//label[@for="hobbies-checkbox-2"]',
+            Hobby.MUSIC: '//label[@for="hobbies-checkbox-3"]'
+        }
 
-    def select_hobby(self, hobby):
-        if hobby.lower() == "sports":
-            browser.element('//label[@for="hobbies-checkbox-1"]').click()
-        if hobby.lower() == "reading":
-            browser.element('//label[@for="hobbies-checkbox-2"]').click()
-        if hobby.lower() == "music":
-            browser.element('//label[@for="hobbies-checkbox-3"]').click()
-        return self
+        selected_hobby = Hobby(user.hobby)
+        browser.element(hobby_mapping.get(selected_hobby)).double_click()
 
-    def upload_picture(self, picture):
-        browser.element('//input[@id="uploadPicture"]').send_keys(path(picture))
-        return self
-
-    def enter_address(self, address):
-        browser.element('//textarea[@id="currentAddress"]').should(be.blank).type(address)
-        return self
-
-    def select_location(self, state, city):
-        browser.element('//input[@id="react-select-3-input"]').type(state).press_enter()
-        browser.element('//input[@id="react-select-4-input"]').type(city).press_enter()
-        return self
-
-    def submit_form(self):
+        browser.element('//input[@id="uploadPicture"]').send_keys(path(user.picture))
+        browser.element('//textarea[@id="currentAddress"]').should(be.blank).type(user.address)
+        browser.element('//input[@id="react-select-3-input"]').type(user.state).press_enter()
+        browser.element('//input[@id="react-select-4-input"]').type(user.city).press_enter()
         browser.element('//button[@id="submit"]').press_enter()
+
         return self
 
     def assert_submission_message(self, message):
         browser.element('//div[@class="modal-header"]').should(have.text(message))
         return self
 
-    def assert_form_details(self, full_name,
-                            email,
-                            gender,
-                            phone_number,
-                            date_of_birth,
-                            subjects,
-                            hobby,
-                            file,
-                            address,
-                            location):
+    def assert_form_details(self, user):
         browser.element('//table[@class="table table-dark table-striped table-bordered table-hover"]').should(have.text(
-            full_name and
-            email and
-            gender and
-            phone_number and
-            date_of_birth and
-            subjects and
-            hobby and
-            file and
-            address and
-            location
+            f'{user.first_name} {user.last_name}' and
+            user.email and
+            user.gender and
+            user.phone_number and
+            f'{user.day} {user.month},{user.year}' and
+            user.subject and
+            user.hobby and
+            user.picture and
+            user.address and
+            f'{user.state} {user.city}'
         ))
         return self
 
