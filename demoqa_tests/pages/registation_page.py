@@ -57,3 +57,48 @@ class RegistrationPage:
     def upload_picture(self, picture):
         browser.element('//input[@id="uploadPicture"]').send_keys(path(picture))
         return self
+
+    def enter_address(self, address):
+        browser.element('//textarea[@id="currentAddress"]').should(be.blank).type(address)
+        return self
+
+    def select_location(self, state, city):
+        browser.element('//input[@id="react-select-3-input"]').type(state).press_enter()
+        browser.element('//input[@id="react-select-4-input"]').type(city).press_enter()
+        return self
+
+    def submit_form(self):
+        browser.element('//button[@id="submit"]').press_enter()
+        return self
+
+    def assert_submission_message(self, message):
+        browser.element('//div[@class="modal-header"]').should(have.text(message))
+        return self
+
+    def assert_form_details(self, full_name,
+                            email,
+                            gender,
+                            phone_number,
+                            date_of_birth,
+                            subjects,
+                            hobby,
+                            file,
+                            address,
+                            location):
+        browser.element('//table[@class="table table-dark table-striped table-bordered table-hover"]').should(have.text(
+            full_name and
+            email and
+            gender and
+            phone_number and
+            date_of_birth and
+            subjects and
+            hobby and
+            file and
+            address and
+            location
+        ))
+        return self
+
+    def close_modal(self):
+        browser.element('//button[@id="closeLargeModal"]').press_enter()
+        return self
