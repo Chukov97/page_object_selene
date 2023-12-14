@@ -41,7 +41,7 @@ class RegistrationPage:
         }
 
         selected_hobby = Hobby(user.hobby)
-        browser.element(hobby_mapping.get(selected_hobby)).double_click()
+        browser.element(hobby_mapping.get(selected_hobby)).click()
 
         browser.element('//input[@id="uploadPicture"]').send_keys(path(user.picture))
         browser.element('//textarea[@id="currentAddress"]').should(be.blank).type(user.address)
