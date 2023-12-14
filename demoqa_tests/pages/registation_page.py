@@ -48,7 +48,6 @@ class RegistrationPage:
         browser.element('//input[@id="react-select-3-input"]').type(user.state).press_enter()
         browser.element('//input[@id="react-select-4-input"]').type(user.city).press_enter()
         browser.element('//button[@id="submit"]').press_enter()
-
         return self
 
     def assert_submission_message(self, message):
