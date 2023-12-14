@@ -31,3 +31,4 @@ def test_form(browser_management):
                                           'NCR Noida')
 
     registration_page.close_modal()
+    
