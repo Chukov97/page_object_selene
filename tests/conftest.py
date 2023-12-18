@@ -1,17 +1,19 @@
 import pytest
 from selene import browser
 from selenium import webdriver
-from demoqa_tests.models.constatn import BASE_URL
+from settings import config
 
 
 @pytest.fixture()
 def browser_management():
-    browser.config.base_url = BASE_URL
+    browser.config.base_url = config.base_url
+    browser.config.driver_name = config.driver_name
+    browser.config.window_height = config.window_height
+    browser.config.window_width = config.window_width
+    browser.config.timeout = config.timeout
     driver_options = webdriver.ChromeOptions()
-    driver_options.page_load_strategy = 'eager'
+    driver_options.page_load_strategy = config.load_strategy
     browser.config.driver_options = driver_options
-    browser.config.window_height = 1080
-    browser.config.window_width = 1920
 
     yield
 
