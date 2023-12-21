@@ -4,4 +4,4 @@ selenium~=4.16.0
 pydantic
 pydantic-settings
 python-dotenv~=1.0.0
-allure-pytest==23.3.2
+allure-pytest==2.13.2
