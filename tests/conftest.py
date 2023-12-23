@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from settings import config
+from utils import attach
 
 
 @pytest.fixture()
@@ -41,6 +42,11 @@ def browser_management():
         browser.config.driver_name = config.driver_name
 
     yield
+
+    attach.add_screenshot(browser)
+    attach.add_logs(browser)
+    attach.add_html(browser)
+    attach.add_video(browser)
 
     browser.quit()
 
