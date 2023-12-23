@@ -10,8 +10,13 @@ from settings import config
 def browser_management():
     browser.config.base_url = config.base_url
     browser.config.timeout = config.timeout
+    browser.config.window_height = config.window_height
+    browser.config.window_width = config.window_width
+    driver_options = webdriver.ChromeOptions()
+    driver_options.page_load_strategy = config.load_strategy
+    browser.config.driver_options = driver_options
+
     if config.remote_url:
-        options = Options()
         selenoid_capabilities = {
             "browserName": "chrome",
             "browserVersion": "100.0",
@@ -21,27 +26,23 @@ def browser_management():
             }
         }
 
-        options.capabilities.update(selenoid_capabilities)
+        driver_options.capabilities.update(selenoid_capabilities)
         driver = webdriver.Remote(
             command_executor=config.remote_url,
-            options=options
+            options=driver_options
         )
 
-        browser_selenoid = Browser(Config(driver))
-        yield browser_selenoid
-
-        browser.quit()
+        # browser_selenoid = Browser(Config(driver))
+        browser.config.driver = driver
+        # yield
+        #
+        # browser.quit()
     else:
         browser.config.driver_name = config.driver_name
-        browser.config.window_height = config.window_height
-        browser.config.window_width = config.window_width
-        driver_options = webdriver.ChromeOptions()
-        driver_options.page_load_strategy = config.load_strategy
-        browser.config.driver_options = driver_options
 
-        yield
+    yield
 
-        browser.quit()
+    browser.quit()
 
 
 @pytest.fixture()
