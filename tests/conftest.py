@@ -1,7 +1,7 @@
 import pytest
 from selene import browser
 from selenium import webdriver
-from settings import config
+from settings import config, credentials
 from utils import attach
 
 
@@ -15,7 +15,7 @@ def browser_management():
     driver_options.page_load_strategy = config.load_strategy
     browser.config.driver_options = driver_options
 
-    if config.remote_url:
+    if config.environment == 'remote':
         selenoid_capabilities = {
             "browserName": "chrome",
             "browserVersion": "100.0",
@@ -26,8 +26,9 @@ def browser_management():
         }
 
         driver_options.capabilities.update(selenoid_capabilities)
+
         driver = webdriver.Remote(
-            command_executor=config.remote_url,
+            command_executor=credentials(),
             options=driver_options
         )
 
