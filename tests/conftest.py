@@ -17,11 +17,11 @@ def browser_management():
 
     if config.environment == 'remote':
         selenoid_capabilities = {
-            "browserName": "chrome",
-            "browserVersion": "100.0",
+            "browserName": config.driver_name,
+            "browserVersion": config.remote_version,
             "selenoid:options": {
-                "enableVNC": True,
-                "enableVideo": True
+                "enableVNC": config.remote_enableVNC,
+                "enableVideo": config.remote_enableVideo
             }
         }
 
